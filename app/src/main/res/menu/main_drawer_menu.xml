@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home_menu"
+            android:icon="@drawable/ic_vec_home"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/nav_aboutUs_menu"
+            android:icon="@drawable/ic_vec_about"
+            android:title="About Us" />
+
+        <item
+            android:id="@+id/nav_moreApps_menu"
+            android:icon="@drawable/ic_vec_more"
+            android:title="More Apps" />
+
+        <item
+            android:id="@+id/nav_policy_menu"
+            android:icon="@drawable/ic_vec_policy"
+            android:title="Privacy Policy" />
+
+    </group>
+
+    <item android:title="Others">
+        <menu>
+            <item
+                android:id="@+id/nav_share_menu"
+                android:icon="@drawable/ic_vec_share"
+                android:title="Share App" />
+            <item
+                android:id="@+id/nav_exit_menu"
+                android:icon="@drawable/ic_vec_logout"
+                android:title="Exit App" />
+
+        </menu>
+
+    </item>
+</menu>
