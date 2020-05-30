@@ -1,16 +1,17 @@
 package com.example.ertugrulghazi.activities;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.ertugrulghazi.R;
 import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.models.EpisodeModel;
+import com.example.ertugrulghazi.models.FavoriteModel;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -25,32 +26,31 @@ import java.util.List;
 import static com.example.ertugrulghazi.models.Constants.extra_position;
 import static com.example.ertugrulghazi.models.Constants.extra_seasonName;
 
-public class PlayEpisodeActivity extends AppCompatActivity {
+public class PlayFavoriteActivity extends AppCompatActivity {
 
-    private static final String TAG = "PlayEpisodeActivity";
+    private static final String TAG = "PlayFavoriteActivity";
 
     private MKPlayer mkplayer;
-    private List<EpisodeModel> models;
-    private String seasonName;
+    private List<FavoriteModel> models;
     private int pos;
     private Er_Database db;
+
     private AdView adView;
     private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play_episode);
+        setContentView(R.layout.activity_play_favorite);
 
         init();
         if (getIntent().hasExtra(extra_position)) {
-            seasonName = getIntent().getStringExtra(extra_seasonName);
             pos = getIntent().getIntExtra(extra_position, 0);
         }
-        models = db.episodeDAO().getAllEpisodeBySeason(seasonName);
+        models = db.favDAO().getAllFav();
 
         mkplayer.play(models.get(pos).getUrl());
-        mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
+        mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getSeasonName()));
 
         mkplayer.setPlayerCallbacks(new MKPlayer.playerCallbacks() {
             @Override
@@ -58,9 +58,9 @@ public class PlayEpisodeActivity extends AppCompatActivity {
                 pos += 1;
                 if (pos <= models.size() - 1) {
                     mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
+                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getSeasonName()));
                 } else
-                    Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlayFavoriteActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -68,26 +68,29 @@ public class PlayEpisodeActivity extends AppCompatActivity {
                 pos -= 1;
                 if (pos >= 0) {
                     mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
+                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getSeasonName()));
                 } else
-                    Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlayFavoriteActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         /*Implement banner ads here*/
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) { }
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+
+            }
         });
 
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
+
         /*Load interstitial ad*/
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
-
     }
 
     @Override
@@ -100,11 +103,12 @@ public class PlayEpisodeActivity extends AppCompatActivity {
     }
 
     private void init() {
+        adView = findViewById(R.id.playFavEpisode_banner);
         db = Er_Database.getInstance(this);
         pos = 0;
         models = new ArrayList<>();
         mkplayer = new MKPlayer(this);
-        adView = findViewById(R.id.playEpisode_banner);
+
     }
 
     @Override
@@ -144,6 +148,7 @@ public class PlayEpisodeActivity extends AppCompatActivity {
             return;
         } else {
             mkplayer.stop();
+
             if (mInterstitialAd.isLoaded()) {
                 mInterstitialAd.show();
             } else {
@@ -153,4 +158,5 @@ public class PlayEpisodeActivity extends AppCompatActivity {
         }
         super.onBackPressed();
     }
+
 }

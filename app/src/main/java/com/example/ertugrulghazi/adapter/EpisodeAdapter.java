@@ -1,6 +1,5 @@
 package com.example.ertugrulghazi.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
@@ -8,22 +7,20 @@ import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ertugrulghazi.R;
+import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.models.EpisodeModel;
 import com.example.ertugrulghazi.models.FavoriteModel;
-import com.example.ertugrulghazi.viewmodel.FavViewModel;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -35,20 +32,19 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
     private static final String TAG = "EpisodeAdapter";
 
     private List<EpisodeModel> mModels = new ArrayList<>();
-    private List<FavoriteModel> mFavModels = new ArrayList<>();
     private DramaListener listener;
     private Context context;
-    private FavViewModel viewModel;
-
+    private Er_Database db;
+    private int lastPosition = -1;
+    private int isChangesDetect = 0;
 
     public EpisodeAdapter(Context context) {
         this.context = context;
-        viewModel = ViewModelProviders.of((FragmentActivity) context).get(FavViewModel.class);
+        db = Er_Database.getInstance(context);
     }
 
     public void setDrama(List<EpisodeModel> models) {
         mModels = models;
-        getAllFav();
         notifyDataSetChanged();
     }
 
@@ -83,10 +79,18 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
 
         myViewHolder.DramaName_tv.setText(mSingleModel.getDramaName());
         myViewHolder.episodeName_tv.setText(mSingleModel.getEpisodeName());
+        myViewHolder.dramaImage_iv.setImageResource(mSingleModel.getThumbnail());
+
+        if (mSingleModel.getIsFav() == 1) {
+            myViewHolder.fav_iv.setImageResource(R.drawable.ic_vec_favorite_red);
+        } else myViewHolder.fav_iv.setImageResource(R.drawable.ic_vec_favorite);
 
         //Make thumbnail of video using async task
-        loadImageAsyncTask loadImageAsyncTask = new loadImageAsyncTask(myViewHolder.dramaImage_iv, myViewHolder.progressBar);
-        loadImageAsyncTask.execute(mSingleModel.getUrl());
+//        if (isChangesDetect == 0) { /*this will stop to create thumbnail again and again*/
+//            loadImageAsyncTask loadImageAsyncTask = new loadImageAsyncTask(myViewHolder.dramaImage_iv, myViewHolder.progressBar);
+//            loadImageAsyncTask.execute(mSingleModel.getUrl());
+//        }
+        setAnimation(myViewHolder.itemView, i);
     }
 
     /*Count total items*/
@@ -100,7 +104,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
         ImageView dramaImage_iv;
         TextView DramaName_tv;
         TextView episodeName_tv;
-        ProgressBar progressBar;
         ImageView fav_iv;
 
         MyViewHolder(@NonNull final View itemView) {
@@ -109,7 +112,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
             dramaImage_iv = itemView.findViewById(R.id.custEpi_iv);
             DramaName_tv = itemView.findViewById(R.id.custEpi_dramaName_tv);
             episodeName_tv = itemView.findViewById(R.id.custEpi_episodeName_tv);
-            progressBar = itemView.findViewById(R.id.custEpi_pb);
             fav_iv = itemView.findViewById(R.id.custEpisode_fav_iv);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -124,20 +126,33 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
             fav_iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    getAllFav();
+                    isChangesDetect = 1;
                     EpisodeModel model = mModels.get(getAdapterPosition());
-                    boolean isContain = false;
-                    for (FavoriteModel model1 : mFavModels) {
-                        if (model1.getEpiId() == model.getEpiId()) {
-                            isContain = true;
-                            break;
-                        }
+
+                    /*Check if drama is favorite or not
+                     * if 0 drama is not favorite if 1 drama is favorite*/
+                    int favStatus = model.getIsFav() == 0 ? 1 : 0;
+                    EpisodeModel updateEpiModel = new EpisodeModel(model.getId(), model.getDramaName(), model.getSeasonName(),
+                            model.getEpisodeName(), model.getUrl(), favStatus, model.getThumbnail());
+                    db.episodeDAO().update(updateEpiModel);
+                    mModels.set(getAdapterPosition(), updateEpiModel);
+
+                    FavoriteModel favModel = db.favDAO().getDramaById(model.getId());
+
+                    //Add drama also in database
+                    FavoriteModel favModelUpdate = new FavoriteModel(model.getId(),
+                            model.getSeasonName(), model.getEpisodeName(), model.getUrl());
+
+                    if (favStatus == 0) {
+                        favModelUpdate.setId(favModel.getId());
+                        db.favDAO().delete(favModelUpdate);
+                        Toast.makeText(context, "Removed from favorite", Toast.LENGTH_SHORT).show();
                     }
-                    if (!isContain) {
-                        FavoriteModel favModel = new FavoriteModel(model.getEpiId(), model.getSeasonName(), model.getEpisodeName(), model.getUrl());
-                        viewModel.insert(favModel);
+                    if (favStatus == 1) {
+                        db.favDAO().insert(favModelUpdate);
                         Toast.makeText(context, "Added to favorite", Toast.LENGTH_SHORT).show();
-                    } else Toast.makeText(context, "Already added", Toast.LENGTH_SHORT).show();
+                    }
+                    notifyItemChanged(getAdapterPosition());
 
                 }
             });
@@ -152,6 +167,8 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
         this.listener = listener;
     }
 
+
+    //Load image AsyncTask class where thumbnail is created from url
     private class loadImageAsyncTask extends AsyncTask<String, Void, Bitmap> {
         WeakReference<ImageView> imageViewWeakReference;
         WeakReference<ProgressBar> progressBarWeakReference;
@@ -189,6 +206,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
     }
 
 
+    //Method that convert url to thumbnail
     private Bitmap retrieveVideoFrameFromVideo(String videoPath) throws Throwable {
         Bitmap bitmap = null;
         MediaMetadataRetriever mediaMetadataRetriever = null;
@@ -209,13 +227,18 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
         return bitmap;
     }
 
-    private void getAllFav() {
-        viewModel = ViewModelProviders.of((FragmentActivity) context).get(FavViewModel.class);
-        viewModel.getAllFav().observe((FragmentActivity) context, new Observer<List<FavoriteModel>>() {
-            @Override
-            public void onChanged(List<FavoriteModel> favoriteModels) {
-                mFavModels = favoriteModels;
-            }
-        });
+
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+//            TranslateAnimation anim = new TranslateAnimation(0,-1000,0,-1000);
+            ScaleAnimation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//            anim.setDuration(new Random().nextInt(501));//to make duration random number between [0,501)
+            anim.setDuration(550);//to make duration random number between [0,501)
+            viewToAnimate.startAnimation(anim);
+            lastPosition = position;
+
+        }
+
     }
 }

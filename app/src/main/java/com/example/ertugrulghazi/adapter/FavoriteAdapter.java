@@ -4,14 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ertugrulghazi.R;
-import com.example.ertugrulghazi.models.EpisodeModel;
 import com.example.ertugrulghazi.models.FavoriteModel;
 
 import java.util.ArrayList;
@@ -22,6 +22,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.MyView
     private List<FavoriteModel> mModels = new ArrayList<>();
     private FavoriteListener listener;
     private Context context;
+
+    private int lastPosition = -1;
+
 
     public FavoriteAdapter(Context context) {
         this.context = context;
@@ -63,6 +66,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.MyView
 
         myViewHolder.seasonName_tv.setText(mSingleModel.getSeasonName());
         myViewHolder.episodeName_tv.setText(mSingleModel.getEpisodeName());
+
+        setAnimation(myViewHolder.itemView, i);
+
     }
 
     /*Count total items*/
@@ -99,5 +105,20 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.MyView
 
     public void setOnItemClickListener(FavoriteListener listener) {
         this.listener = listener;
+    }
+
+
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition) {
+//            TranslateAnimation anim = new TranslateAnimation(0,-1000,0,-1000);
+            ScaleAnimation anim = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//            anim.setDuration(new Random().nextInt(501));//to make duration random number between [0,501)
+            anim.setDuration(550);//to make duration random number between [0,501)
+            viewToAnimate.startAnimation(anim);
+            lastPosition = position;
+
+        }
+
     }
 }

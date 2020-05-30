@@ -12,23 +12,52 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.PrivacyPolicyActivity" />
+        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+        <!--Play Favourite Activity-->
         <activity
-            android:name=".activities.PlayEpisodeActivity"
+            android:name=".activities.PlayFavoriteActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/NOAppTheme" />
+
+        <!--Splash Screen Activity-->
         <activity
-            android:name=".activities.EpisodeActivity"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity android:name=".activities.AboutUsActivity" />
-        <activity
-            android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".activities.SplashScreenActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--Insert Data Activity-->
+        <activity
+            android:name=".activities.InsertDataActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!--Privacy Policy Activity-->
+        <activity android:name=".activities.PrivacyPolicyActivity" />
+
+        <!--Play Episode Activity-->
+        <activity
+            android:name=".activities.PlayEpisodeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/NOAppTheme" />
+
+        <!--Episode Activity-->
+        <activity
+            android:name=".activities.EpisodeActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.AboutUsActivity" />
+
+        <!--Main Activity-->
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
+
 </manifest>

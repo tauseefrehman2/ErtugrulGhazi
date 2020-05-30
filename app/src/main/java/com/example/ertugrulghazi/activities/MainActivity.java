@@ -8,8 +8,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 break;
             case R.id.nav_moreApps_menu:
-                Toast.makeText(this, "More apps clicked", Toast.LENGTH_SHORT).show();
+                moreApps();
                 break;
             case R.id.nav_policy_menu:
                 startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
@@ -154,4 +156,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return true;
                 }
             };
+
+    private void moreApps() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=cloud09&hl=en")));
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=cloud09&hl=en")));
+        }
+    }
 }

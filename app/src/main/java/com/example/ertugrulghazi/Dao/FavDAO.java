@@ -24,6 +24,10 @@ public interface FavDAO {
     void delete(FavoriteModel model);
 
     @Query("Select * from fav order by id desc")
-    LiveData<List<FavoriteModel>> getAllFav();
+    List<FavoriteModel> getAllFav();
+
+    @Query("Select * from fav where epiId=:epiId")
+    FavoriteModel getDramaById(int epiId);
+
 
 }

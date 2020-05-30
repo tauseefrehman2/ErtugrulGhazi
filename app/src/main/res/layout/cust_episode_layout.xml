@@ -18,33 +18,20 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="240dp">
+        android:layout_height="260dp">
 
-        <RelativeLayout
-            android:id="@+id/custEpi_rl"
+        <ImageView
+            android:id="@+id/custEpi_iv"
             android:layout_width="match_parent"
-            android:layout_height="180dp">
-
-            <ImageView
-                android:id="@+id/custEpi_iv"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/videothumb" />
-
-            <ProgressBar
-                android:id="@+id/custEpi_pb"
-                style="@android:style/Widget.Material.Light.ProgressBar.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-        </RelativeLayout>
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/thumbnailone" />
 
         <TextView
             android:id="@+id/custEpi_episodeName_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/custEpi_rl"
+            android:layout_below="@id/custEpi_iv"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:text="Episode no 1"
@@ -62,27 +49,28 @@
             android:text="Drama name"
             android:textSize="12sp" />
 
-        <ImageView
-            android:id="@+id/custEpisode_download_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/custEpi_rl"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="10dp"
-            android:background="@drawable/shape_light_white"
-            android:padding="5dp"
-            android:src="@drawable/ic_vec_download" />
+        <!--        <ImageView-->
+        <!--            android:id="@+id/custEpisode_download_iv"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_below="@id/custEpi_rl"-->
+        <!--            android:layout_alignParentEnd="true"-->
+        <!--            android:layout_margin="10dp"-->
+        <!--            android:background="@drawable/shape_light_white"-->
+        <!--            android:padding="5dp"-->
+        <!--            android:src="@drawable/ic_vec_download" />-->
 
         <ImageView
             android:id="@+id/custEpisode_fav_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/custEpi_rl"
+            android:layout_below="@id/custEpi_iv"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
             android:layout_marginBottom="10dp"
-            android:layout_toLeftOf="@id/custEpisode_download_iv"
             android:background="@drawable/shape_light_white"
-            android:padding="5dp"
+            android:padding="7dp"
             android:src="@drawable/ic_vec_favorite" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
