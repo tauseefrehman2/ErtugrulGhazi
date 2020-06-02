@@ -36,6 +36,8 @@ public class EpisodeActivity extends AppCompatActivity {
 
     private Er_Database db;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

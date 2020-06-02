@@ -1,63 +1,42 @@
 {
   "project_info": {
-    "project_number": "25993765892",
-    "firebase_url": "https://ertugrul-ghazi-5e229.firebaseio.com",
-    "project_id": "ertugrul-ghazi-5e229",
-    "storage_bucket": "ertugrul-ghazi-5e229.appspot.com"
+    "project_number": "978593182119",
+    "firebase_url": "https://erproject1-b287e.firebaseio.com",
+    "project_id": "erproject1-b287e",
+    "storage_bucket": "erproject1-b287e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:25993765892:android:e457bc7ec7dd6d07bf8151",
+        "mobilesdk_app_id": "1:978593182119:android:77bdf77b5f06cd86aac682",
         "android_client_info": {
           "package_name": "com.example.ertugrulghazi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "25993765892-ltep9cf42p2lk21s5rms6hm7fa98lqog.apps.googleusercontent.com",
+          "client_id": "978593182119-0pjd3j4a1q1u3iu75k68vrmn5ikrv15m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ertugrulghazi",
+            "certificate_hash": "349d88c50156253938790e42c9aa04529ba9c3bd"
+          }
+        },
+        {
+          "client_id": "978593182119-qr3f2nh685e4vhr4qpvf2bv2o481k2fe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBM2rUbvj6apIgAjo2_EtTmwPp7amHUqe8"
+          "current_key": "AIzaSyCOhknaHAJ3X8T0beo7Pq9rMHa98RSPTNM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "25993765892-ltep9cf42p2lk21s5rms6hm7fa98lqog.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:25993765892:android:06a1743f72a9dfb0bf8151",
-        "android_client_info": {
-          "package_name": "com.example.ertugrulghazi.activities"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "25993765892-ltep9cf42p2lk21s5rms6hm7fa98lqog.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBM2rUbvj6apIgAjo2_EtTmwPp7amHUqe8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "25993765892-ltep9cf42p2lk21s5rms6hm7fa98lqog.apps.googleusercontent.com",
+              "client_id": "978593182119-qr3f2nh685e4vhr4qpvf2bv2o481k2fe.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
