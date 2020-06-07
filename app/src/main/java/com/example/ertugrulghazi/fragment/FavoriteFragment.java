@@ -3,10 +3,8 @@ package com.example.ertugrulghazi.fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
+import android.renderscript.Sampler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,31 +16,36 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.ertugrulghazi.R;
-import com.example.ertugrulghazi.activities.EpisodeActivity;
 import com.example.ertugrulghazi.activities.MainActivity;
-import com.example.ertugrulghazi.activities.PlayEpisodeActivity;
 import com.example.ertugrulghazi.activities.PlayFavoriteActivity;
-import com.example.ertugrulghazi.adapter.EpisodeAdapter;
 import com.example.ertugrulghazi.adapter.FavoriteAdapter;
-import com.example.ertugrulghazi.database.Er_Database;
-import com.example.ertugrulghazi.models.EpisodeModel;
+//import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.models.FavoriteModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static com.example.ertugrulghazi.models.Constants.extra_position;
-import static com.example.ertugrulghazi.models.Constants.extra_seasonName;
 
 public class FavoriteFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private FavoriteAdapter adapter;
+    private List<FavoriteModel> models;
+    private SwipeRefreshLayout refreshLayout;
+    private TextView fav_tv;
 
-    private Er_Database db;
+    //    private Er_Database db;
+    private DatabaseReference reference;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,28 +57,16 @@ public class FavoriteFragment extends Fragment {
         Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
                 .setSubtitle("Favorite");
 
-        db = Er_Database.getInstance(getActivity().getApplicationContext());
-
         final View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         init(view);
 
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-//        progressDialog.setTitle("Loading...");
-        progressDialog.setMessage("Favorite Drama's are processing");
-        progressDialog.show();
-        new Handler().postDelayed(new Runnable() {
+        LoadFavDrama();
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void run() {
-                if (db.favDAO().getAllFav().size() < 1) {
-                    view.findViewById(R.id.favorite_tv).setVisibility(View.VISIBLE);
-                } else {
-                    adapter.setDrama(db.favDAO().getAllFav());
-                    view.findViewById(R.id.favorite_tv).setVisibility(View.GONE);
-                }
-
-                progressDialog.dismiss();
+            public void onRefresh() {
+                LoadFavDrama();
             }
-        }, 2000);
+        });
 
         adapter.setOnItemClickListener(new FavoriteAdapter.FavoriteListener() {
             @Override
@@ -101,12 +92,6 @@ public class FavoriteFragment extends Fragment {
                 final int pos = viewHolder.getAdapterPosition();
                 final FavoriteModel model = adapter.getDramaAt(pos);
 
-                /*get drama from main list and update to 0*/
-                EpisodeModel epiModel = db.episodeDAO().getDramaById(model.getEpiId());
-                final EpisodeModel updateEpiModel = new EpisodeModel(epiModel.getId(),
-                        epiModel.getDramaName(), epiModel.getSeasonName(),
-                        epiModel.getEpisodeName(), epiModel.getUrl(), 0, epiModel.getThumbnail());
-
 
                 adapter.removeItem(pos);
                 android.app.AlertDialog.Builder dialogBuilder =
@@ -119,8 +104,9 @@ public class FavoriteFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                db.favDAO().delete(model);
-                                db.episodeDAO().update(updateEpiModel);
+                                FirebaseDatabase.getInstance().getReference("favourite")
+                                        .child(model.getEpiId()).removeValue();
+
                                 dialog.dismiss();
                                 Toast.makeText(getContext(), "Drama removed from favorite", Toast.LENGTH_SHORT).show();
                             }
@@ -140,11 +126,41 @@ public class FavoriteFragment extends Fragment {
         return view;
     }
 
+    private void LoadFavDrama() {
+
+        refreshLayout.setRefreshing(true);
+        reference = FirebaseDatabase.getInstance().getReference("favourite");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                models = new ArrayList<>();
+                models.clear();
+
+                if (dataSnapshot.getChildrenCount() > 0) {
+                    fav_tv.setVisibility(View.GONE);
+                }
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    models.add(ds.getValue(FavoriteModel.class));
+                }
+                adapter.setDrama(models);
+                refreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                refreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
     private void init(View view) {
         recyclerView = view.findViewById(R.id.favorite_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new FavoriteAdapter(getContext());
         recyclerView.setAdapter(adapter);
+
+        refreshLayout = view.findViewById(R.id.favorite_refresh);
+        fav_tv = view.findViewById(R.id.favorite_tv);
     }
 }

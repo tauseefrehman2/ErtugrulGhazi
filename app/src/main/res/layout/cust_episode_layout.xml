@@ -20,18 +20,31 @@
         android:layout_width="match_parent"
         android:layout_height="260dp">
 
-        <ImageView
-            android:id="@+id/custEpi_iv"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/thumbnailone" />
+        <RelativeLayout
+            android:id="@+id/custEpi_rl1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/custEpi_iv"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/video_placeholder" />
+
+            <ProgressBar
+                android:id="@+id/custEpi_pb"
+                style="@android:style/Widget.Material.Light.ProgressBar.Small.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/custEpi_episodeName_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/custEpi_iv"
+            android:layout_below="@id/custEpi_rl1"
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:text="Episode no 1"
@@ -64,7 +77,7 @@
             android:id="@+id/custEpisode_fav_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/custEpi_iv"
+            android:layout_below="@id/custEpi_rl1"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"

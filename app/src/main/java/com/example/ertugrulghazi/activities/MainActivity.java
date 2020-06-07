@@ -45,20 +45,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        db.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange: " + dataSnapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
         /*XML connectivity*/
         drawerLayout = findViewById(R.id.mainActivity_drawerLayout);
         toolbar = findViewById(R.id.mainActivity_toolbar);

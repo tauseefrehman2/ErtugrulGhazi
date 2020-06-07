@@ -1,57 +1,34 @@
 package com.example.ertugrulghazi.models;
 
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "epi")
 public class EpisodeModel {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
-    private String dramaName;
-    private String seasonName;
+    private String id;
     private String episodeName;
     private String url;
-    private int isFav;
-    private int thumbnail;
+    private String thumbnail;
+    private String seasonName;
 
-    public EpisodeModel(String dramaName, String seasonName, String episodeName, String url, int isFav, int thumbnail) {
-        this.dramaName = dramaName;
-        this.seasonName = seasonName;
-        this.episodeName = episodeName;
-        this.url = url;
-        this.isFav = isFav;
-        this.thumbnail = thumbnail;
+    public EpisodeModel() {
     }
 
-    @Ignore
-    public EpisodeModel(int id, String dramaName, String seasonName, String episodeName, String url, int isFav, int thumbnail) {
+    public EpisodeModel(String id, String episodeName, String url, String thumbnail) {
         this.id = id;
-        this.dramaName = dramaName;
-        this.seasonName = seasonName;
         this.episodeName = episodeName;
         this.url = url;
-        this.isFav = isFav;
         this.thumbnail = thumbnail;
     }
 
+    public EpisodeModel(String id, String episodeName, String url, String thumbnail, String seasonName) {
+        this.id = id;
+        this.episodeName = episodeName;
+        this.url = url;
+        this.thumbnail = thumbnail;
+        this.seasonName = seasonName;
+    }
 
-    public int getId() {
+    public String getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDramaName() {
-        return dramaName;
-    }
-
-    public String getSeasonName() {
-        return seasonName;
     }
 
     public String getEpisodeName() {
@@ -62,11 +39,15 @@ public class EpisodeModel {
         return url;
     }
 
-    public int getIsFav() {
-        return isFav;
+    public String getThumbnail() {
+        return thumbnail;
     }
 
-    public int getThumbnail() {
-        return thumbnail;
+    public String getSeasonName() {
+        return seasonName;
+    }
+
+    public void setSeasonName(String seasonName) {
+        this.seasonName = seasonName;
     }
 }

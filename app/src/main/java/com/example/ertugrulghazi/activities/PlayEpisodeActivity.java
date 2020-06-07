@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ertugrulghazi.R;
-import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.models.EpisodeModel;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -17,6 +16,11 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.khizar1556.mkvideoplayer.MKPlayer;
 
 import java.util.ArrayList;
@@ -33,9 +37,10 @@ public class PlayEpisodeActivity extends AppCompatActivity {
     private List<EpisodeModel> models;
     private String seasonName;
     private int pos;
-    private Er_Database db;
     private AdView adView;
     private InterstitialAd mInterstitialAd;
+
+    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,37 +52,71 @@ public class PlayEpisodeActivity extends AppCompatActivity {
             seasonName = getIntent().getStringExtra(extra_seasonName);
             pos = getIntent().getIntExtra(extra_position, 0);
         }
-        models = db.episodeDAO().getAllEpisodeBySeason(seasonName);
+        //Load episode from firebase
+        myRef = FirebaseDatabase.getInstance().getReference(seasonName.toLowerCase());
 
-        mkplayer.play(models.get(pos).getUrl());
-        mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                models = new ArrayList<>();
+                models.clear();
+                Log.d(TAG, "onDataChange: " + dataSnapshot.toString());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    models.add(snapshot.getValue(EpisodeModel.class));
+                }
+                mkplayer.play(models.get(pos).getUrl());
+                mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                refreshLayout.setRefreshing(false);
+            }
+        });
+
+        //play episode using player
         mkplayer.setPlayerCallbacks(new MKPlayer.playerCallbacks() {
             @Override
             public void onNextClick() {
+                if (models.isEmpty()) {
+                    Toast.makeText(PlayEpisodeActivity.this, "Please wait", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                int tempPos = pos;
                 pos += 1;
                 if (pos <= models.size() - 1) {
                     mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
-                } else
+                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
+                } else {
+                    pos = tempPos;
                     Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onPreviousClick() {
+                if (models.isEmpty()) {
+                    Toast.makeText(PlayEpisodeActivity.this, "Please wait", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                int tempPos = pos;
                 pos -= 1;
                 if (pos >= 0) {
                     mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getDramaName()));
-                } else
+                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
+                } else {
+                    pos = tempPos;
                     Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         /*Implement banner ads here*/
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) { }
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
         });
 
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -99,10 +138,11 @@ public class PlayEpisodeActivity extends AppCompatActivity {
         }
     }
 
+    private void LoadEpisode(String seasonName) {
+
+    }
+
     private void init() {
-        db = Er_Database.getInstance(this);
-        pos = 0;
-        models = new ArrayList<>();
         mkplayer = new MKPlayer(this);
         adView = findViewById(R.id.playEpisode_banner);
     }
