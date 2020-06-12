@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
-    android:layout_marginTop="3dp"
+    android:layout_marginTop="8dp"
     android:layout_marginRight="8dp"
-    android:layout_marginBottom="3dp"
+    android:layout_marginBottom="8dp"
     android:clickable="true"
     android:elevation="2dp"
     android:focusable="true"
@@ -18,45 +18,55 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/custFav_iv"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/demo" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/custFav_youtube_player_view_ll"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@id/custFav_iv"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/custFav_seasonName_tv"
-                android:layout_width="wrap_content"
+            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                android:id="@+id/custFav_youtube_player_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ertugrul"
-                android:textAlignment="center"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/custFav_episodeName_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pakistan" />
-
+                app:autoPlay="false"
+                app:showFullScreenButton="false"
+                app:showYouTubeButton="false" />
         </LinearLayout>
 
-        <ImageView
+        <TextView
+            android:id="@+id/custFav_episodeName_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/custFav_youtube_player_view_ll"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Episode no 1"
+            android:textAlignment="center"
+            android:textColor="#000"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/custFav_dramaName_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/custFav_episodeName_tv"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="Drama name"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/custFav_delete_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/custFav_youtube_player_view_ll"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
+            android:padding="7dp"
             android:src="@drawable/ic_vec_delete" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -80,15 +80,13 @@ public class DramasFragment extends Fragment {
 
         refreshLayout.setRefreshing(true);
 
-        FirebaseDatabase.getInstance().getReference().addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("seasons").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 models = new ArrayList<>();
                 models.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: " + ds.getKey().substring(0, 6));
-                    if (ds.getKey().substring(0, 6).toLowerCase().equals("season"))
-                        models.add(new SeasonModel(R.drawable.demo, "Ertugrul Ghazi", ds.getKey()));
+                    models.add(new SeasonModel(R.drawable.demo, "Ertugrul Ghazi", ds.getKey()));
                 }
                 adapter.setDrama(models);
                 recyclerView.setAdapter(adapter);

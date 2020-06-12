@@ -1,8 +1,12 @@
 package com.example.ertugrulghazi.activities;
 
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +26,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.khizar1556.mkvideoplayer.MKPlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,84 +43,44 @@ public class PlayEpisodeActivity extends AppCompatActivity {
 
     private static final String TAG = "PlayEpisodeActivity";
 
-    private MKPlayer mkplayer;
+    //        private MKPlayer mkplayer;
     private List<EpisodeModel> models;
     private String seasonName;
     private int pos;
     private AdView adView;
+    String videoId;
+
     private InterstitialAd mInterstitialAd;
 
     private DatabaseReference myRef;
+    private YouTubePlayerView youTubePlayerView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_episode);
 
-        init();
+        videoId = "S0Q4gqBUs7c";
+        adView = findViewById(R.id.episode_banner);
+
         if (getIntent().hasExtra(extra_position)) {
             seasonName = getIntent().getStringExtra(extra_seasonName);
             pos = getIntent().getIntExtra(extra_position, 0);
+            videoId = getIntent().getStringExtra("videoId");
         }
-        //Load episode from firebase
-        myRef = FirebaseDatabase.getInstance().getReference(seasonName.toLowerCase());
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                models = new ArrayList<>();
-                models.clear();
-                Log.d(TAG, "onDataChange: " + dataSnapshot.toString());
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    models.add(snapshot.getValue(EpisodeModel.class));
-                }
-                mkplayer.play(models.get(pos).getUrl());
-                mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
-            }
+        youTubePlayerView = findViewById(R.id.youtube_player_view);
+        getLifecycle().addObserver(youTubePlayerView);
+        youTubePlayerView.enterFullScreen();
 
+        youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                refreshLayout.setRefreshing(false);
+            public void onReady(YouTubePlayer youTubePlayer) {
+                youTubePlayer.loadVideo(videoId, 0);
             }
         });
-
-        //play episode using player
-        mkplayer.setPlayerCallbacks(new MKPlayer.playerCallbacks() {
-            @Override
-            public void onNextClick() {
-                if (models.isEmpty()) {
-                    Toast.makeText(PlayEpisodeActivity.this, "Please wait", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                int tempPos = pos;
-                pos += 1;
-                if (pos <= models.size() - 1) {
-                    mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
-                } else {
-                    pos = tempPos;
-                    Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onPreviousClick() {
-                if (models.isEmpty()) {
-                    Toast.makeText(PlayEpisodeActivity.this, "Please wait", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                int tempPos = pos;
-                pos -= 1;
-                if (pos >= 0) {
-                    mkplayer.play(models.get(pos).getUrl());
-                    mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
-                } else {
-                    pos = tempPos;
-                    Toast.makeText(PlayEpisodeActivity.this, "No more videos", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
 
         /*Implement banner ads here*/
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
@@ -133,57 +103,15 @@ public class PlayEpisodeActivity extends AppCompatActivity {
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         Log.d(TAG, "onConfigurationChanged: called");
         super.onConfigurationChanged(newConfig);
-        if (mkplayer != null) {
-            mkplayer.onConfigurationChanged(newConfig);
-        }
-    }
-
-    private void LoadEpisode(String seasonName) {
-
-    }
-
-    private void init() {
-        mkplayer = new MKPlayer(this);
-        adView = findViewById(R.id.playEpisode_banner);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mkplayer != null) {
-            mkplayer.onPause();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mkplayer != null) {
-            mkplayer.onResume();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mkplayer != null) {
-            mkplayer.onDestroy();
-        }
     }
 
     @Override
     public void onBackPressed() {
-
-        if (mkplayer != null && mkplayer.onBackPressed()) {
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-            } else {
-                Log.d("TAG", "The interstitial wasn't loaded yet.");
-            }
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
             finish();
             return;
         } else {
-            mkplayer.stop();
             if (mInterstitialAd.isLoaded()) {
                 mInterstitialAd.show();
             } else {

@@ -1,30 +1,28 @@
 package com.example.ertugrulghazi.models;
-//
-//import androidx.room.Entity;
-//import androidx.room.PrimaryKey;
 
-//@Entity(tableName = "fav")
 public class FavoriteModel {
 
-    private String epiId;
+    private String userId;
+    private String videoId;
     private String seasonName;
     private String episodeName;
-    private String url;
-    private String thumbnail;
 
     public FavoriteModel() {
     }
 
-    public FavoriteModel(String epiId, String seasonName, String episodeName, String url, String thumbnail) {
-        this.epiId = epiId;
+    public FavoriteModel(String userId, String videoId, String seasonName, String episodeName) {
+        this.userId = userId;
+        this.videoId = videoId;
         this.seasonName = seasonName;
         this.episodeName = episodeName;
-        this.url = url;
-        this.thumbnail = thumbnail;
     }
 
-    public String getEpiId() {
-        return epiId;
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getVideoId() {
+        return videoId;
     }
 
     public String getSeasonName() {
@@ -33,14 +31,6 @@ public class FavoriteModel {
 
     public String getEpisodeName() {
         return episodeName;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
     }
 }
 

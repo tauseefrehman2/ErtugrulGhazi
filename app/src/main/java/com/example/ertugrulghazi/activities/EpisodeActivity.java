@@ -69,7 +69,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
     private void LoadEpisode(final String seasonName) {
         refreshLayout.setRefreshing(true);
-        myRef = FirebaseDatabase.getInstance().getReference(seasonName.toLowerCase());
+        myRef = FirebaseDatabase.getInstance().getReference("seasons").child(seasonName.toLowerCase());
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -94,7 +94,6 @@ public class EpisodeActivity extends AppCompatActivity {
     }
 
     private void init() {
-
         refreshLayout = findViewById(R.id.episode_refreshLayout);
         adapter = new EpisodeAdapter(EpisodeActivity.this);
 
@@ -110,9 +109,8 @@ public class EpisodeActivity extends AppCompatActivity {
                 Intent intent = new Intent(EpisodeActivity.this, PlayEpisodeActivity.class);
                 intent.putExtra(extra_seasonName, seasonName);
                 intent.putExtra(extra_position, pos);
+                intent.putExtra("videoId", models.get(pos).getVideoId());
                 startActivity(intent);
-
-                Toast.makeText(EpisodeActivity.this, "" + pos, Toast.LENGTH_SHORT).show();
             }
         });
     }

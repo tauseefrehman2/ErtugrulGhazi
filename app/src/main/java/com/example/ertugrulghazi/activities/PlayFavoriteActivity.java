@@ -60,7 +60,7 @@ public class PlayFavoriteActivity extends AppCompatActivity {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     models.add(ds.getValue(FavoriteModel.class));
                 }
-                mkplayer.play(models.get(pos).getUrl());
+//                mkplayer.play(models.get(pos).getUrl());
                 mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat(models.get(pos).getSeasonName()));
 
             }
@@ -82,7 +82,7 @@ public class PlayFavoriteActivity extends AppCompatActivity {
                 int tempPos = pos;
                 pos += 1;
                 if (pos <= models.size() - 1) {
-                    mkplayer.play(models.get(pos).getUrl());
+//                    mkplayer.play(models.get(pos).getUrl());
                     mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
                 } else {
                     pos = tempPos;
@@ -99,7 +99,7 @@ public class PlayFavoriteActivity extends AppCompatActivity {
                 int tempPos = pos;
                 pos -= 1;
                 if (pos >= 0) {
-                    mkplayer.play(models.get(pos).getUrl());
+//                    mkplayer.play(models.get(pos).getUrl());
                     mkplayer.setTitle(models.get(pos).getEpisodeName().concat(" ").concat("Ertugrul Ghazi"));
                 } else {
                     pos = tempPos;

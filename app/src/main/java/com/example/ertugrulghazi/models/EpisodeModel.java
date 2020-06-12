@@ -3,44 +3,30 @@ package com.example.ertugrulghazi.models;
 
 public class EpisodeModel {
 
-    private String id;
+    private String videoId;
     private String episodeName;
-    private String url;
-    private String thumbnail;
     private String seasonName;
 
     public EpisodeModel() {
     }
 
-    public EpisodeModel(String id, String episodeName, String url, String thumbnail) {
-        this.id = id;
+    public EpisodeModel(String videoId, String episodeName) {
+        this.videoId = videoId;
         this.episodeName = episodeName;
-        this.url = url;
-        this.thumbnail = thumbnail;
     }
 
-    public EpisodeModel(String id, String episodeName, String url, String thumbnail, String seasonName) {
-        this.id = id;
+    public EpisodeModel(String videoId, String episodeName, String seasonName) {
+        this.videoId = videoId;
         this.episodeName = episodeName;
-        this.url = url;
-        this.thumbnail = thumbnail;
         this.seasonName = seasonName;
     }
 
-    public String getId() {
-        return id;
+    public String getVideoId() {
+        return videoId;
     }
 
     public String getEpisodeName() {
         return episodeName;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
     }
 
     public String getSeasonName() {

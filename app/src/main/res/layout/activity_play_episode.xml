@@ -4,16 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".activities.PlayEpisodeActivity">
 
-    <include
-        layout="@layout/mk_player"
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+        android:id="@+id/youtube_player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/playEpisode_banner" />
+        android:layout_above="@id/episode_banner"
+        app:showFullScreenButton="false"
+        app:showYouTubeButton="false" />
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/playEpisode_banner"
+        android:id="@+id/episode_banner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

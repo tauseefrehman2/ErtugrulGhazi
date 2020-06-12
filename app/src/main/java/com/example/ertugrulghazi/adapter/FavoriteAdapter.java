@@ -85,7 +85,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.MyView
         MyViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-            seasonName_tv = itemView.findViewById(R.id.custFav_seasonName_tv);
+//            seasonName_tv = itemView.findViewById(R.id.custFav_seasonName_tv);
             episodeName_tv = itemView.findViewById(R.id.custFav_episodeName_tv);
 
             itemView.setOnClickListener(new View.OnClickListener() {

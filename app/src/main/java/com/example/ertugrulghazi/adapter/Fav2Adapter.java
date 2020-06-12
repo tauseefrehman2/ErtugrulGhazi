@@ -1,10 +1,8 @@
 package com.example.ertugrulghazi.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
@@ -17,17 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.ertugrulghazi.R;
-//import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.activities.EpisodeActivity;
+import com.example.ertugrulghazi.activities.MainActivity;
 import com.example.ertugrulghazi.models.EpisodeModel;
 import com.example.ertugrulghazi.models.FavoriteModel;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
 import java.lang.ref.WeakReference;
@@ -47,11 +38,13 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHolder> {
+//import com.example.ertugrulghazi.database.Er_Database;
+
+public class Fav2Adapter extends RecyclerView.Adapter<Fav2Adapter.MyViewHolder> {
 
     private static final String TAG = "EpisodeAdapter";
 
-    private List<EpisodeModel> mModels = new ArrayList<>();
+    private List<FavoriteModel> mModels = new ArrayList<>();
     private DramaListener listener;
     private Context context;
     //    private Er_Database db;
@@ -61,19 +54,18 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
     SharedPreferences sharedPreferences;
 
 
-    public EpisodeAdapter(Context context) {
+    public Fav2Adapter(Context context) {
         this.context = context;
         sharedPreferences = context.getSharedPreferences("user_id", MODE_PRIVATE);
         userId = sharedPreferences.getString("uId", "");
-//        db = Er_Database.getInstance(context);
     }
 
-    public void setDrama(List<EpisodeModel> models) {
+    public void setDrama(List<FavoriteModel> models) {
         mModels = models;
         notifyDataSetChanged();
     }
 
-    public EpisodeModel getDramaAt(int position) {
+    public FavoriteModel getDramaAt(int position) {
         return mModels.get(position);
     }
 
@@ -82,7 +74,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
         notifyItemRemoved(position);
     }
 
-    public void restoreItem(EpisodeModel model, int position) {
+    public void restoreItem(FavoriteModel model, int position) {
         mModels.add(position, model);
         notifyItemInserted(position);
     }
@@ -92,7 +84,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.cust_episode_layout, viewGroup, false);
+                .inflate(R.layout.cust_fav_layout, viewGroup, false);
 
         return new MyViewHolder(view);
     }
@@ -100,7 +92,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, int i) {
 
-        final EpisodeModel mSingleModel = mModels.get(i);
+        final FavoriteModel mSingleModel = mModels.get(i);
 
         myViewHolder.DramaName_tv.setText("Ertugrul Ghazi");
         myViewHolder.episodeName_tv.setText(mSingleModel.getEpisodeName());
@@ -111,41 +103,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
             }
         });
 
-        isFavourite(mSingleModel.getVideoId(), myViewHolder.fav_iv);
-
-        String userKey = getAlphaNumericString(20);
-
-        myViewHolder.fav_iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (myViewHolder.fav_iv.getTag().equals("fav")) {
-
-                    FavoriteModel favoriteModel = new FavoriteModel(userId, mSingleModel.getVideoId(),
-                            mSingleModel.getSeasonName(), mSingleModel.getEpisodeName());
-
-
-                    FirebaseDatabase.getInstance().getReference("favourite").child(mSingleModel.getVideoId())
-                            .child(userId)
-                            .setValue(favoriteModel);
-
-                } else {
-                    FirebaseDatabase.getInstance().getReference("favourite")
-                            .child(mSingleModel.getVideoId())
-                            .child(userId)
-                            .removeValue();
-                }
-            }
-        });
-
-//        if (mSingleModel.getIsFav() ==1) {
-//        myViewHolder.fav_iv.setImageResource(R.drawable.ic_vec_favorite_red);
-//        } else myViewHolder.fav_iv.setImageResource(R.drawable.ic_vec_favorite);
-
-        //Make thumbnail of video using async task
-//        if (isChangesDetect == 0) { /*this will stop to create thumbnail again and again*/
-//            loadImageAsyncTask loadImageAsyncTask = new loadImageAsyncTask(myViewHolder.dramaImage_iv, myViewHolder.progressBar);
-//            loadImageAsyncTask.execute(mSingleModel.getUrl());
-//        }
         setAnimation(myViewHolder.itemView, i);
     }
 
@@ -159,25 +116,17 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
 
         TextView DramaName_tv;
         TextView episodeName_tv;
-        ImageView fav_iv;
+        ImageView delete_iv;
         YouTubePlayerView youTubePlayerView;
 
         MyViewHolder(@NonNull final View itemView) {
             super(itemView);
-            DramaName_tv = itemView.findViewById(R.id.custEpi_dramaName_tv);
-            episodeName_tv = itemView.findViewById(R.id.custEpi_episodeName_tv);
-            fav_iv = itemView.findViewById(R.id.custEpisode_fav_iv);
-            youTubePlayerView = itemView.findViewById(R.id.episode_youtube_player_view);
-            ((EpisodeActivity) context).getLifecycle().addObserver(youTubePlayerView);
 
-//            youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-//                @Override
-//                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-//                    String videoId = "S0Q4gqBUs7c";
-//                    youTubePlayer.loadVideo(videoId, 0);
-//                youTubePlayer.
-//                }
-//            });
+            DramaName_tv = itemView.findViewById(R.id.custFav_dramaName_tv);
+            episodeName_tv = itemView.findViewById(R.id.custFav_episodeName_tv);
+            delete_iv = itemView.findViewById(R.id.custFav_delete_iv);
+            youTubePlayerView = itemView.findViewById(R.id.custFav_youtube_player_view);
+            ((MainActivity) context).getLifecycle().addObserver(youTubePlayerView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,40 +136,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
                         listener.setEpisode(position);
                 }
             });
-
-//            fav_iv.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    isChangesDetect = 1;
-//                    EpisodeModel model = mModels.get(getAdapterPosition());
-//
-//                    /*Check if drama is favorite or not
-//                     * if 0 drama is not favorite if 1 drama is favorite*/
-//                    int favStatus = model.getIsFav() == 0 ? 1 : 0;
-//                    EpisodeModel updateEpiModel = new EpisodeModel(model.getId(), model.getDramaName(), model.getSeasonName(),
-//                            model.getEpisodeName(), model.getUrl(), favStatus, model.getThumbnail());
-//                    db.episodeDAO().update(updateEpiModel);
-//                    mModels.set(getAdapterPosition(), updateEpiModel);
-//
-//                    FavoriteModel favModel = db.favDAO().getDramaById(model.getId());
-//
-//                    //Add drama also in database
-//                    FavoriteModel favModelUpdate = new FavoriteModel(model.getId(),
-//                            model.getSeasonName(), model.getEpisodeName(), model.getUrl());
-//
-//                    if (favStatus == 0) {
-//                        favModelUpdate.setId(favModel.getId());
-//                        db.favDAO().delete(favModelUpdate);
-//                        Toast.makeText(context, "Removed from favorite", Toast.LENGTH_SHORT).show();
-//                    }
-//                    if (favStatus == 1) {
-//                        db.favDAO().insert(favModelUpdate);
-//                        Toast.makeText(context, "Added to favorite", Toast.LENGTH_SHORT).show();
-//                    }
-//                    notifyItemChanged(getAdapterPosition());
-//
-//                }
-//            });
         }
     }
 
@@ -326,30 +241,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
 
             }
         });
-    }
 
-
-    private String getAlphaNumericString(int n) {
-
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
-
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index = (int) (AlphaNumericString.length() * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
     }
 }

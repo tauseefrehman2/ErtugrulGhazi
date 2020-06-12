@@ -1,15 +1,17 @@
 package com.example.ertugrulghazi.fragment;
 
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.renderscript.Sampler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,10 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.ertugrulghazi.R;
+import com.example.ertugrulghazi.activities.EpisodeActivity;
 import com.example.ertugrulghazi.activities.MainActivity;
+import com.example.ertugrulghazi.activities.PlayEpisodeActivity;
 import com.example.ertugrulghazi.activities.PlayFavoriteActivity;
+import com.example.ertugrulghazi.adapter.Fav2Adapter;
 import com.example.ertugrulghazi.adapter.FavoriteAdapter;
-//import com.example.ertugrulghazi.database.Er_Database;
 import com.example.ertugrulghazi.models.FavoriteModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,14 +39,20 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.example.ertugrulghazi.models.Constants.extra_position;
+import static com.example.ertugrulghazi.models.Constants.extra_seasonName;
+
+//import com.example.ertugrulghazi.database.Er_Database;
 
 public class FavoriteFragment extends Fragment {
 
+    private static final String TAG = "FavoriteFragment";
+
     private RecyclerView recyclerView;
-    private FavoriteAdapter adapter;
+    private Fav2Adapter adapter;
     private List<FavoriteModel> models;
     private SwipeRefreshLayout refreshLayout;
     private TextView fav_tv;
+    private String uId;
 
     //    private Er_Database db;
     private DatabaseReference reference;
@@ -68,12 +78,16 @@ public class FavoriteFragment extends Fragment {
             }
         });
 
-        adapter.setOnItemClickListener(new FavoriteAdapter.FavoriteListener() {
+        adapter.setOnItemClickListener(new Fav2Adapter.DramaListener() {
             @Override
-            public void setFav(int pos) {
-                Intent intent = new Intent(getContext(), PlayFavoriteActivity.class);
+            public void setEpisode(int pos) {
+
+                Intent intent = new Intent(getContext(), PlayEpisodeActivity.class);
+                intent.putExtra(extra_seasonName, models.get(pos).getSeasonName());
                 intent.putExtra(extra_position, pos);
+                intent.putExtra("videoId", models.get(pos).getVideoId());
                 startActivity(intent);
+
             }
         });
 
@@ -87,10 +101,11 @@ public class FavoriteFragment extends Fragment {
             }
 
             @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
 
                 final int pos = viewHolder.getAdapterPosition();
                 final FavoriteModel model = adapter.getDramaAt(pos);
+                Log.d(TAG, "onSwiped: " + models.size());
 
 
                 adapter.removeItem(pos);
@@ -105,7 +120,8 @@ public class FavoriteFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 FirebaseDatabase.getInstance().getReference("favourite")
-                                        .child(model.getEpiId()).removeValue();
+                                        .child(model.getVideoId())
+                                        .child(uId).removeValue();
 
                                 dialog.dismiss();
                                 Toast.makeText(getContext(), "Drama removed from favorite", Toast.LENGTH_SHORT).show();
@@ -121,8 +137,6 @@ public class FavoriteFragment extends Fragment {
             }
         });
         helper.attachToRecyclerView(recyclerView);
-
-
         return view;
     }
 
@@ -130,6 +144,7 @@ public class FavoriteFragment extends Fragment {
 
         refreshLayout.setRefreshing(true);
         reference = FirebaseDatabase.getInstance().getReference("favourite");
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -140,7 +155,11 @@ public class FavoriteFragment extends Fragment {
                     fav_tv.setVisibility(View.GONE);
                 }
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    models.add(ds.getValue(FavoriteModel.class));
+                    if (ds.child(uId).exists()) {
+
+                        FavoriteModel model = ds.child(uId).getValue(FavoriteModel.class);
+                        models.add(model);
+                    }
                 }
                 adapter.setDrama(models);
                 refreshLayout.setRefreshing(false);
@@ -157,10 +176,13 @@ public class FavoriteFragment extends Fragment {
         recyclerView = view.findViewById(R.id.favorite_rv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new FavoriteAdapter(getContext());
+        adapter = new Fav2Adapter(getContext());
         recyclerView.setAdapter(adapter);
 
         refreshLayout = view.findViewById(R.id.favorite_refresh);
         fav_tv = view.findViewById(R.id.favorite_tv);
+
+        SharedPreferences sp = getContext().getSharedPreferences("user_id", Context.MODE_PRIVATE);
+        uId = sp.getString("uId", "");
     }
 }
