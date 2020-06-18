@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,12 +97,7 @@ public class Fav2Adapter extends RecyclerView.Adapter<Fav2Adapter.MyViewHolder> 
 
         myViewHolder.DramaName_tv.setText("Ertugrul Ghazi");
         myViewHolder.episodeName_tv.setText(mSingleModel.getEpisodeName());
-        myViewHolder.youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(YouTubePlayer youTubePlayer) {
-                youTubePlayer.cueVideo(mSingleModel.getVideoId(), 0);
-            }
-        });
+        myViewHolder.thumbNail.setImageResource(R.drawable.demo);
 
         setAnimation(myViewHolder.itemView, i);
     }
@@ -117,7 +113,7 @@ public class Fav2Adapter extends RecyclerView.Adapter<Fav2Adapter.MyViewHolder> 
         TextView DramaName_tv;
         TextView episodeName_tv;
         ImageView delete_iv;
-        YouTubePlayerView youTubePlayerView;
+        ImageView thumbNail;
 
         MyViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -125,8 +121,8 @@ public class Fav2Adapter extends RecyclerView.Adapter<Fav2Adapter.MyViewHolder> 
             DramaName_tv = itemView.findViewById(R.id.custFav_dramaName_tv);
             episodeName_tv = itemView.findViewById(R.id.custFav_episodeName_tv);
             delete_iv = itemView.findViewById(R.id.custFav_delete_iv);
-            youTubePlayerView = itemView.findViewById(R.id.custFav_youtube_player_view);
-            ((MainActivity) context).getLifecycle().addObserver(youTubePlayerView);
+            thumbNail = itemView.findViewById(R.id.custFav_iv);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -104,12 +104,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
 
         myViewHolder.DramaName_tv.setText("Ertugrul Ghazi");
         myViewHolder.episodeName_tv.setText(mSingleModel.getEpisodeName());
-        myViewHolder.youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(YouTubePlayer youTubePlayer) {
-                youTubePlayer.cueVideo(mSingleModel.getVideoId(), 0);
-            }
-        });
+        myViewHolder.thumbnail.setImageResource(R.drawable.demo);
 
         isFavourite(mSingleModel.getVideoId(), myViewHolder.fav_iv);
 
@@ -160,24 +155,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
         TextView DramaName_tv;
         TextView episodeName_tv;
         ImageView fav_iv;
-        YouTubePlayerView youTubePlayerView;
+        ImageView thumbnail;
 
         MyViewHolder(@NonNull final View itemView) {
             super(itemView);
             DramaName_tv = itemView.findViewById(R.id.custEpi_dramaName_tv);
             episodeName_tv = itemView.findViewById(R.id.custEpi_episodeName_tv);
             fav_iv = itemView.findViewById(R.id.custEpisode_fav_iv);
-            youTubePlayerView = itemView.findViewById(R.id.episode_youtube_player_view);
-            ((EpisodeActivity) context).getLifecycle().addObserver(youTubePlayerView);
-
-//            youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-//                @Override
-//                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-//                    String videoId = "S0Q4gqBUs7c";
-//                    youTubePlayer.loadVideo(videoId, 0);
-//                youTubePlayer.
-//                }
-//            });
+            thumbnail = itemView.findViewById(R.id.custEpi_iv);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,40 +172,6 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.MyViewHo
                         listener.setEpisode(position);
                 }
             });
-
-//            fav_iv.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    isChangesDetect = 1;
-//                    EpisodeModel model = mModels.get(getAdapterPosition());
-//
-//                    /*Check if drama is favorite or not
-//                     * if 0 drama is not favorite if 1 drama is favorite*/
-//                    int favStatus = model.getIsFav() == 0 ? 1 : 0;
-//                    EpisodeModel updateEpiModel = new EpisodeModel(model.getId(), model.getDramaName(), model.getSeasonName(),
-//                            model.getEpisodeName(), model.getUrl(), favStatus, model.getThumbnail());
-//                    db.episodeDAO().update(updateEpiModel);
-//                    mModels.set(getAdapterPosition(), updateEpiModel);
-//
-//                    FavoriteModel favModel = db.favDAO().getDramaById(model.getId());
-//
-//                    //Add drama also in database
-//                    FavoriteModel favModelUpdate = new FavoriteModel(model.getId(),
-//                            model.getSeasonName(), model.getEpisodeName(), model.getUrl());
-//
-//                    if (favStatus == 0) {
-//                        favModelUpdate.setId(favModel.getId());
-//                        db.favDAO().delete(favModelUpdate);
-//                        Toast.makeText(context, "Removed from favorite", Toast.LENGTH_SHORT).show();
-//                    }
-//                    if (favStatus == 1) {
-//                        db.favDAO().insert(favModelUpdate);
-//                        Toast.makeText(context, "Added to favorite", Toast.LENGTH_SHORT).show();
-//                    }
-//                    notifyItemChanged(getAdapterPosition());
-//
-//                }
-//            });
         }
     }
 

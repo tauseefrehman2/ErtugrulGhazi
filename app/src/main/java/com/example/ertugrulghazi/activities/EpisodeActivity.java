@@ -50,13 +50,11 @@ public class EpisodeActivity extends AppCompatActivity {
 
         init();
 
-
         if (getIntent().hasExtra(extra_dramaName)) {
             seasonName = getIntent().getStringExtra(extra_seasonName);
             setTitle("Ertugrul Ghazi");
             getSupportActionBar().setSubtitle(seasonName);
         } else setTitle("Dramas");
-
 
         LoadEpisode(seasonName);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

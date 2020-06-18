@@ -25,7 +25,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.MyView
 
     private int lastPosition = -1;
 
-
     public FavoriteAdapter(Context context) {
         this.context = context;
     }
