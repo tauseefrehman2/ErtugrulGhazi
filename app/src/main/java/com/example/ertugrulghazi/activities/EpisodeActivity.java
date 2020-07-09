@@ -50,6 +50,8 @@ public class EpisodeActivity extends AppCompatActivity {
 
         init();
 
+
+        Firebaseaut
         if (getIntent().hasExtra(extra_dramaName)) {
             seasonName = getIntent().getStringExtra(extra_seasonName);
             setTitle("Ertugrul Ghazi");
